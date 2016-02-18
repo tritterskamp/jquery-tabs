@@ -7,6 +7,7 @@
             tabTitles: 'li',
             tabTitleActiveClass: 'active',
             tab: '.tab-content > div',
+            tabActiveClass: 'active',
             setup: null,
             complete: null
         }, options);
@@ -38,9 +39,11 @@
 
             // SET UP FOR EACH TAB TITLE
             $this.find(settings.tabTitles).each(function(i) {
-                $(this).attr('data-idx', i + 1).wrapInner( '<a href="#' + $this.find(settings.tab).eq(i).attr('id') +'"></div>');
+                $(this).attr({
+                    'data-idx': i + 1,
+                    'class': 'title'                    
+                }).wrapInner( '<a href="#' + $this.find(settings.tab).eq(i).attr('id') +'"></div>');
             });
-
 
             // when a tab-title link is clicked
             $this.find(settings.tabTitles + ' a').click(function(e) {                
@@ -54,8 +57,8 @@
                 $thisTitle.siblings().removeClass(settings.tabTitleActiveClass);
                 $thisTitle.addClass(settings.tabTitleActiveClass);
                 // show/hide sections
-                $thisSection.siblings().hide();
-                $thisSection.fadeIn();
+                $thisSection.siblings().hide().removeClass(settings.tabActiveClass);
+                $thisSection.fadeIn().addClass(settings.tabActiveClass);
 
             });
 
