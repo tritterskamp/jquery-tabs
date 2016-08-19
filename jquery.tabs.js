@@ -1,19 +1,30 @@
+/* 
+jQuery Tabs 
+https://github.com/tritterskamp/jquery-tabs
+Example: $('.tabs').renderTabs(); 
+*/
+
 (function($) {
 
     $.fn.renderTabs = function(options) {
         // Establish our default settings
         var settings = $.extend({
-            tabTitleContainer: 'ul',
+            tabTitleContainer: '.tab-titles',
             tabTitles: 'li',
+            tabTitleClass: 'title',
             tabTitleActiveClass: 'active',
             tab: '.tab-content > div',
+            tabClass: 'tab',
             tabActiveClass: 'active',
+            IdPrefix: 'tc',
+            addHref: false,
             setup: null,
             complete: null
         }, options);
         
-        return this.each( function(i) {
-            var $this = $(this);        
+        this.each( function(i) {
+            var $this = $(this),
+                tabTitles = settings.tabTitleContainer + ' ' + settings.tabTitles;
             
             // SETUP CALL BACK FUNCTION
             if ( $.isFunction( settings.setup ) ) {
@@ -22,31 +33,34 @@
 
             // SETUP:
             // set last-child class to last title
-            $this.find(settings.tabTitles + ':last-child').addClass('last-child');
+            $this.find(tabTitles + ':last-child').addClass('last-child');
 
             // SET UNIQUE IDS
             // for each tab component on page    
-            var tcNum = 'tc' + (i + 1); // find the tab component number
+            var tcNum = settings.IdPrefix + (i + 1); // find the tab component number
                         
             // SET UP FOR EACH TAB
             $this.find(settings.tab).each(function(i) {
-                $(this).attr({
+                $(this).addClass(settings.tabClass).attr({
                     'data-idx': i + 1,
-                    'class': 'tab',
                     'id': tcNum + '-s' + (i + 1)
                 });
             });
 
             // SET UP FOR EACH TAB TITLE
-            $this.find(settings.tabTitles).each(function(i) {
-                $(this).attr({
-                    'data-idx': i + 1,
-                    'class': 'title'                    
-                }).wrapInner( '<a href="#' + $this.find(settings.tab).eq(i).attr('id') +'"></div>');
+            $this.find(tabTitles).each(function(i) {
+                $(this).addClass(settings.tabTitleClass).attr({
+                    'data-idx': i + 1
+                });
+                if (settings.addHref) {
+                    $(this).wrapInner( '<a href="#' + $this.find(settings.tab).eq(i).attr('id') +'"></a>');
+                } else {
+                    $(this).find('a').attr('href', '#' + $this.find(settings.tab).eq(i).attr('id'));
+                }
             });
 
             // when a tab-title link is clicked
-            $this.find(settings.tabTitles + ' a').click(function(e) {                
+            $this.find(tabTitles + ' a').click(function(e) {                
                 e.preventDefault();
                 var $titleLink = $(this);
 
@@ -66,7 +80,7 @@
             // hide all sections
             $this.find(settings.tab).hide();
             //trigger click the first title link
-            $this.find(settings.tabTitles + ':first-child a').trigger('click');        
+            $this.find(tabTitles + ':first-child a').trigger('click');        
 
             // GO TO ANCHOR
             // does the url have a hash
